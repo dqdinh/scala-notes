@@ -21,14 +21,23 @@ http://www.lihaoyi.com/post/ImplicitDesignPatternsinScala.html
 
 ## Books
 
-### Functional Programming in Scala
-by Paul Chiusano and Rúnar Bjarnason - While this book does not specifically cover Cats,
-it is a great introduction to functional programming in Scala in general and covers some
-of the abstractions that can be found in Cats.
-
 ### Advanced Scala with Cats
 by Noel Welsh and Dave Gurnell - The aims of this book are two-fold:
 to introduce monads, functors, and other functional programming patterns as a way to structure program design,
 and to explain how these concepts are implemented in Cats.
+
+#### Setup
+
+Run the code and enter console in `Main.scala`:
+~~~
+> run
+> console
+scala> import cats._, cats.implicits._, cats.data._
+~~~
+
+### Functional Programming in Scala
+by Paul Chiusano and Rúnar Bjarnason - While this book does not specifically cover Cats,
+it is a great introduction to functional programming in Scala in general and covers some
+of the abstractions that can be found in Cats.
 
 ### SICP

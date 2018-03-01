@@ -74,7 +74,10 @@ lazy val commonSettings = Seq(
     .setPreference(AlignSingleLineCaseStatements, true)
     .setPreference(AlignParameters, true)
     .setPreference(DanglingCloseParenthesis, Preserve),
-  resolvers += Resolver.sonatypeRepo("snapshots"),
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("snapshots"),
+    Resolver.sbtPluginRepo("releases")
+  ),
   testOptions in Test += Tests.Argument(
     TestFrameworks.ScalaCheck,
     "-minSuccessful", "100",
