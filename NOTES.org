@@ -1,0 +1,40 @@
+** Meeting Notes
+*** Ch.8
+- Abstracting over Type Constructors
+- link to IdMetadata interpreter work
+
+- Final Tagless
+
+#+BEGIN_SRC scala
+
+import java.util.UUID
+
+import cats.{ Id, Inject, Show }
+import com.amazonaws.services.dynamodbv2.model.AttributeValue
+import com.gu.scanamo.error.{ DynamoReadError, NoPropertyOfType }
+import com.gu.scanamo.Table
+import org.specs2.{ ScalaCheck, Specification }
+import com.softwaremill.tagging._
+import play.api.{ Configuration, Environment, Logger }
+
+import utils.{ Arbitraries, DynamoHelper }
+import domain.{
+  Error,
+  Identity,
+  ScanamoReadError
+}
+import domain.dynamodb.MetadataItem
+import domain.http.IdentityBatchResult
+import interpreters.DynamoDBIdentityStoreInterpreter._
+import interpreters.NamespaceKindIndex
+
+object DynamoTest extends DynamoHelper
+
+val client = DynamoTest.dynamoClient()
+  val config = Configuration.load(Environment.simple())
+  val identityGuidIndex: String @@ NamespaceKindIndex = "identityGuidIndex".taggedWith[NamespaceKindIndex]
+  val table = Table[MetadataItem](idMetadataTableName)
+  val store = new DynamoDBIdentityStoreInterpreter[Id](client, table, identityGuidIndex)
+
+#+END_SRC
+
