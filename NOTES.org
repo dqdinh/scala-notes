@@ -3,8 +3,7 @@
 - Abstracting over Type Constructors
 - link to IdMetadata interpreter work
 
-- Final Tagless
-
+**** Final Tagless Example
 #+BEGIN_SRC scala
 
 import java.util.UUID
@@ -38,3 +37,47 @@ val client = DynamoTest.dynamoClient()
 
 #+END_SRC
 
+*** Ch.9 Map reduce
+
+#+BEGIN_SRC scala
+def map[F, A, B](a: F[A])(f: A => B): F[B] = ???
+def flatMap[F, A, B](a: F[A])(b: B)(f: (B, A) => B): B = ???
+
+// Distributed reduction function requires associativity in order to
+// ensure that reduction happens in one direction
+
+reduce(a1, reduce(a2, a3)) == reduce(reduce(a1, a2), a3)
+
+// ???
+// Our fold operation requires us to seed the computation with an element of type B.
+// Since fold may be split into an arbitrary number of parallel steps,
+// the seed should not affect the result of the computation.
+// This naturally requires the seed to be an identity element:
+// ???
+//
+// Q: why is it equal to a1?
+// Q: why does seed need to be the identity?
+//
+reduce(seed, a1) == reduce(a1, seed) == a1
+
+
+// Monoid data type has associativity and identity
+
+Foldable => foldMap => foldLeft, foldRight
+
+/* NOTE: Using vector in parallel operations:
+
+  Vector is a general-purpose, immutable data structure.
+  It provides random access and updates in effectively constant time, as well as very fast append and prepend.
+  Because vectors strike a good balance between fast random selections and fast random functional updates, they are currently the default implementation of immutable indexed sequences.
+  It is backed by a little endian bit-mapped vector trie with a branching factor of 32.
+  Locality is very good, but not contiguous, which is good for very large sequences.
+
+  Note: Despite being an immutable collection, the implementation uses mutable state internally during construction.
+  These state changes are invisible in single-threaded code but can lead to race conditions in some multi-threaded scenarios.
+  The state of a new collection instance may not have been "published" (in the sense of the Java Memory Model specification), so that an unsynchronized non-volatile read from another thread may observe the object in an invalid state (see SI-7838 for details).
+  Note that such a read is not guaranteed to ever see the written object at all, and should therefore not be used, regardless of this issue.
+  The easiest workaround is to exchange values between threads through a volatile var.
+*/
+
+#+END_SRC
