@@ -143,17 +143,17 @@ object Main extends App {
       }
   }
 
-  object Printable {
-    import PrintableInstances._
+  // object Printable {
+  //   import PrintableInstances._
 
-    def format(a: A)(implicit p: Printable[A]): String =
-      a match {
-        case Int    => p.format(a)
-        case String => p.format(a)
-      }
+  //   def format(a: A)(implicit p: Printable[A]): String =
+  //     a match {
+  //       case Int    => p.format(a)
+  //       case String => p.format(a)
+  //     }
 
-    def print[A](a: A)(implicit p: Printable[A]): Unit = println(p.format(a))
-  }
+  //   def print[A](a: A)(implicit p: Printable[A]): Unit = println(p.format(a))
+  // }
 
   // Ch1 tests
   def tests() = {
@@ -239,7 +239,25 @@ object Ch9MapReduce {
 
   val CPU_NUM = Runtime.getRuntime.availableProcessors
 
-  def parallelFoldMap[A, B: Monoid](as: Vector[A])(f: A => B): Future[B] = ???
+  def parallelFoldMap[A, B: Monoid](as: Vector[A])(f: A => B): Future[B] = {
+    val batch: List[List[A]] = as.toList.grouped((1.0 * as.size / CPU_NUM).ceil.toInt).toList
+
+    val batchOfFutures: List[Future[B]] = batch.map {
+      a => Future { foldMap(a.toVector)(f) }
+    }
+
+    val futureResultList: Future[List[B]] = Future.sequence(batchOfFutures)
+
+    // futureResultList.map(b => Monoid[B].combine(b, Monoid[B].empty))
+
+    // Cat's monoid combine all
+    // def combineAll[A: Monoid](as: List[A]): A =
+    //   as.foldLeft(Monoid[A].empty)(Monoid[A].combine)
+
+    // futureResultList.map(combineAll(_))
+
+    futureResultList.map(l => l.foldLeft(Monoid[B].empty)(Monoid[B].combine))
+  }
 
   // Ch9 tests
   def testFoldMap() = {
